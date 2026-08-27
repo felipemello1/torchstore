@@ -8,6 +8,7 @@
 
 import logging
 import os
+import socket
 
 import pytest
 import torch
@@ -57,16 +58,12 @@ def ctx():
 class TestHelperFunctions:
     """Test helper functions."""
 
-    def test_get_local_hostname(self, monkeypatch):
-        """Test get_local_hostname returns string and respects env var."""
-        # Default behavior
-        hostname = get_local_hostname()
-        assert isinstance(hostname, str)
-        assert len(hostname) > 0
+    def test_get_local_hostname_ignores_inherited_environment(self, monkeypatch):
+        """Test get_local_hostname uses the runtime host instead of the environment."""
+        monkeypatch.setenv("HOSTNAME", "submission-host")
+        monkeypatch.setattr(socket, "gethostname", lambda: "worker-host")
 
-        # With env var override
-        monkeypatch.setenv("HOSTNAME", "test-hostname")
-        assert get_local_hostname() == "test-hostname"
+        assert get_local_hostname() == "worker-host"
 
     def test_is_local_to_volume_same_host(self):
         """Test is_local_to_volume returns True for same host."""

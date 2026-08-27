@@ -5,7 +5,6 @@
 # LICENSE file in the root directory of this source tree.
 
 import math
-import os
 import socket
 import uuid
 from logging import getLogger
@@ -121,8 +120,8 @@ def tensors_overlap_in_memory(
 
 
 def get_local_hostname() -> str:
-    """Get the current machine's hostname."""
-    return os.environ.get("HOSTNAME", socket.gethostname())
+    """Get the current runtime host's kernel hostname."""
+    return socket.gethostname()
 
 
 async def spawn_actors(num_processes, actor_cls, name, mesh=None, **init_args):
